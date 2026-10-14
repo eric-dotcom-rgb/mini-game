@@ -1,4 +1,4 @@
-const canvas = document.getElementById('gameCanvas');
+const canvas = document.getElementById('gameCanvas');                      //pagina principale
 const ctx = canvas.getContext('2d');
 
 const scoreEl = document.getElementById('score');
@@ -19,8 +19,8 @@ const overlayText = document.getElementById('overlay-text');
 const startBtn = document.getElementById('start-btn');
 
 const WIDTH = canvas.width;
-const HEIGHT = canvas.height;
-const HORIZON = 105;
+const HEIGHT = canvas.height;                                  //limiti e impostazioni auto
+const HORIZON = 105;                                                                
 const PLAYER_Y = 500;
 const PLAYER_ACCELERATION_SHIFT = 90;
 const LANE_COUNT = 4;
@@ -32,40 +32,40 @@ const SHOULDER_WIDTH = 50;
 const CARRIAGEWAY_WIDTH = (ROAD_RIGHT - ROAD_LEFT - MEDIAN_WIDTH - SHOULDER_WIDTH * 2) / 2;
 const START_SPEED = 60;
 const MIN_SPEED = 20;
-const MAX_SPEED = 380;
+const MAX_SPEED = 400;
 const SPEED_GAUGE_MAX = 400;
-const GEAR_MAX_SPEEDS = [70, 110, 170, 240, 310, 380];
-const IDLE_RPM = 900;
-const MAX_RPM = 8000;
-const OUTSIDE_TEMPERATURE = 18;
-const START_ACCELERATION = 30;
-const THROTTLE_ACCELERATION = 45;
+const GEAR_MAX_SPEEDS = [70, 110, 170, 240, 310, 400];
+const IDLE_RPM = 950;
+const MAX_RPM = 6500;
+const OUTSIDE_TEMPERATURE = 7;
+const START_ACCELERATION = 40;
+const THROTTLE_ACCELERATION = 60;
 const COAST_DECELERATION = 10;
-const BRAKE_DECELERATION = 70;
+const BRAKE_DECELERATION = 80;
 const ROAD_SCROLL_PER_KMH = 2.3;
 const PLAYER_POSITION_EASING = 6;
-const TRAFFIC_LANE_CHANGE_LOOKAHEAD = 2.5;
+const TRAFFIC_LANE_CHANGE_LOOKAHEAD = 2;
 const PLAYER_WIDTH = 75.6 * 0.8;
 const PLAYER_HEIGHT = 118.8 * 0.8;
 const STARTING_LIVES = 3;
 const COLLISION_COOLDOWN = 1.15;
-const TRAFFIC_MODELS = [
+const TRAFFIC_MODELS = [                                                         //paesaggi
   { id: 'svj', name: 'SVJ', color: '#e3c51e', renderWidth: 62, renderHeight: 100 },
   { id: 'chiron', name: 'Chiron Pur Sport', color: '#102d58', renderWidth: 62, renderHeight: 100 },
   { id: 'car-carrier', name: 'Car carrier', color: '#b82727', renderWidth: 72, renderHeight: 170 },
-  { id: 'ninja-bike', name: 'Green sport bike', color: '#58bd32', renderWidth: 34, renderHeight: 100 },
-  { id: 'harley-bike', name: 'White cruiser', color: '#e6e4dc', renderWidth: 38, renderHeight: 100 },
+  { id: 'ninja-bike', name: 'Green H2R', color: '#58bd32', renderWidth: 34, renderHeight: 100 },
+  { id: 'harley-bike', name: 'Harley-Davidson cruiser', color: '#e6e4dc', renderWidth: 38, renderHeight: 100 },
 ];
 const LANDSCAPES = [
-  { name: 'CITY', sky: ['#90b3b5', '#efd0a4'], ground: ['#747f70', '#3e5147'], road: ['#515857', '#303738'] },
-  { name: 'CANYON', sky: ['#83a6b6', '#ebc69a'], ground: ['#a7754f', '#704b37'], road: ['#5a5751', '#353634'] },
-  { name: 'FARMLAND', sky: ['#8db7c0', '#f0d9a9'], ground: ['#82985c', '#50633f'], road: ['#555a56', '#323938'] },
-  { name: 'MOUNTAINS', sky: ['#88a9bd', '#e5d5b5'], ground: ['#6f8970', '#405447'], road: ['#505856', '#303738'] },
+  { name: 'CITY', ground: ['#747f70', '#3e5147'], road: ['#515857', '#303738'] },
+  { name: 'CANYON', ground: ['#a7754f', '#704b37'], road: ['#5a5751', '#353634'] },
+  { name: 'FARMLAND', ground: ['#82985c', '#50633f'], road: ['#555a56', '#323938'] },
+  { name: 'MOUNTAINS', ground: ['#6f8970', '#405447'], road: ['#505856', '#303738'] },
 ];
 const SEGMENT_LENGTH = 600;
 const SIGN_INTERVAL = 300;
 
-let gameState = 'ready';
+let gameState = 'ready';                                          
 let distance = 0;
 let bestDistance = Number(localStorage.getItem('redline-run-best') || 0);
 let lives = STARTING_LIVES;
@@ -73,7 +73,7 @@ let speed = 0;
 let currentGear = 1;
 let oilTemperature = 80;
 let coolantTemperature = 82;
-let autoAccelerating = true;
+let autoAccelerating = false;
 let roadOffset = 0;
 let trafficClock = 0;
 let lastTimestamp = 0;
@@ -950,7 +950,7 @@ function shadeColor(hex, amount) {
   return `rgb(${red}, ${green}, ${blue})`;
 }
 
-function createUtopiaSprite() {
+function createUtopiaSprite() {                                         //auto player
   const sprite = document.createElement('canvas');
   sprite.width = 28;
   sprite.height = 44;
@@ -1312,7 +1312,7 @@ function drawPixelatedUtopia(x, y) {
 function drawTopDownCar(x, y, width, height, color, style, isPlayer = false) {
   ctx.save();
   ctx.translate(x - width / 2, y - height / 2);
-  ctx.scale(width / 100, height / 180);
+  ctx.scale(width / 110, height / 180);
 
   if (isPlayer) {
     ctx.translate(50, 90);

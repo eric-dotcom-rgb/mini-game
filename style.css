@@ -290,7 +290,7 @@ h1 {
   border: 2px solid #62756e;
   border-radius: 50%;
   background:
-    radial-gradient(circle at center, #172328 0 56%, transparent 57%),
+    radial-gradient(circle at center, #172328 0 56%, transparent 20%),
     conic-gradient(from 225deg, #42d39a 0deg, #b6d45b 160deg, #f7c451 220deg, #f25b4f 270deg, transparent 270deg 360deg),
     #0a1113;
   box-shadow: inset 0 0 0 5px #10191c, inset 0 0 18px rgba(0, 0, 0, 0.9), 0 0 12px rgba(89, 219, 165, 0.12);
@@ -298,8 +298,8 @@ h1 {
 
 .rpm-gauge {
   background:
-    radial-gradient(circle at center, #172328 0 56%, transparent 57%),
-    conic-gradient(from 225deg, #42d39a 0deg, #b6d45b 170deg, #f7c451 220deg, #f25b4f 270deg, transparent 270deg 360deg),
+    radial-gradient(circle at center, #172328 0 56%, transparent 20%),
+    conic-gradient(from 225deg, #348012 0deg, #b6d45b 170deg, #f7c451 220deg, #f25b4f 270deg, transparent 270deg 360deg),
     #0a1113;
 }
 
@@ -416,7 +416,7 @@ h1 {
   padding: 5px 7px;
   display: grid;
   gap: 2px;
-  border: 1px solid rgba(94, 190, 139, 0.42);
+  border: 1px solid rgba(50, 165, 104, 0.548);
   border-radius: 4px;
   background:
     repeating-linear-gradient(0deg, rgba(87, 169, 122, 0.035) 0 1px, transparent 1px 3px),

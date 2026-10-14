@@ -1,12 +1,13 @@
 # Redline Run
 
-A small top-down, pixel-art Italian motorway driving game. Guide a silver Utopia-inspired hypercar along a divided autostrada with two lanes in each direction. Opposing traffic uses the other carriageway, and roadside signs show Italian motorway speed limits.
+Move with your grey Pagani Huayra between blue Bugattis and yellow SVJs between the super chaotic traffic scene, smoke superbikes on the left lane and use the trucks to slow down the traffic! With 'Pagani Vs traffic' game, you can be reckless as much as you want on characteristic Italian motorways.
+Buon divertimento, pilota!
 
 ## How to play
 
-- Open `index.html` in a browser, or serve the folder locally.
-- Steer left and right with the arrow keys or `A` and `D`.
-- Press `W` or `↑` to start a run; the car automatically accelerates from 0 to 60 km/h and stays ghosted against traffic until it reaches 60. Select gears with number keys `1`–`6` (maximum speeds: 70, 110, 170, 240, 310, and 380 km/h); hold `W` or `↑` to accelerate and `S` or `↓` to brake down to a minimum of 20 km/h.
+- Open `https://eric-dotcom-rgb.github.io/mini-game/` in the browser search taskbar
+- Steer left and right with the arrow keys or `A` and `D`
+- Press `W` or `↑` to start a run; the car automatically accelerates from 0 to 60 km/h automatically and stays ghosted against traffic until it reaches 60. Select gears with number keys `1`–`6` (maximum speeds: 70, 110, 170, 240, 310, and 380 km/h); hold `W` or `↑` to accelerate and `S` or `↓` to brake down to a minimum of 20 km/h.
 - The retro dashboard shows 0–400 km/h and RPM gauges, oil and coolant temperatures, local time, an 18°C simulated outside temperature, gear selection, scores, and lives.
 - The car moves closer to the center of the screen while accelerating, then shifts back by about one-third of that distance while braking or coasting.
 - On a touch screen, hold the on-screen arrow buttons to steer.
