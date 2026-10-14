@@ -49,14 +49,14 @@ const PLAYER_WIDTH = 75.6 * 0.8;
 const PLAYER_HEIGHT = 118.8 * 0.8;
 const STARTING_LIVES = 3;
 const COLLISION_COOLDOWN = 1.15;
-const TRAFFIC_MODELS = [                                                         //paesaggi
+const TRAFFIC_MODELS = [                                                         //auto del traffico in lista con le loro caratteristiche
   { id: 'svj', name: 'SVJ', color: '#e3c51e', renderWidth: 62, renderHeight: 100 },
   { id: 'chiron', name: 'Chiron Pur Sport', color: '#102d58', renderWidth: 62, renderHeight: 100 },
   { id: 'car-carrier', name: 'Car carrier', color: '#b82727', renderWidth: 72, renderHeight: 170 },
   { id: 'ninja-bike', name: 'Green H2R', color: '#58bd32', renderWidth: 34, renderHeight: 100 },
   { id: 'harley-bike', name: 'Harley-Davidson cruiser', color: '#e6e4dc', renderWidth: 38, renderHeight: 100 },
 ];
-const LANDSCAPES = [
+const LANDSCAPES = [                                                             //ambiente di gioco con colori per strada e terreno
   { name: 'CITY', ground: ['#747f70', '#3e5147'], road: ['#515857', '#303738'] },
   { name: 'CANYON', ground: ['#a7754f', '#704b37'], road: ['#5a5751', '#353634'] },
   { name: 'FARMLAND', ground: ['#82985c', '#50633f'], road: ['#555a56', '#323938'] },
@@ -64,7 +64,7 @@ const LANDSCAPES = [
 ];
 const SEGMENT_LENGTH = 600;
 const SIGN_INTERVAL = 300;
-
+                                                                                                                      //quando è sulla schermata d' inizio
 let gameState = 'ready';                                          
 let distance = 0;
 let bestDistance = Number(localStorage.getItem('redline-run-best') || 0);
@@ -72,7 +72,7 @@ let lives = STARTING_LIVES;
 let speed = 0;
 let currentGear = 1;
 let oilTemperature = 80;
-let coolantTemperature = 82;
+let coolantTemperature = 120;
 let autoAccelerating = false;
 let roadOffset = 0;
 let trafficClock = 0;
@@ -86,7 +86,8 @@ const player = { x: 0, y: PLAYER_Y, steer: 0 };
 const playerImage = new Image();
 playerImage.src = 'players car.png';
 const trafficSprites = new Map(TRAFFIC_MODELS.map((model) => [model.id, createTrafficSprite(model.id)]));
-
+//serve a calcolare la strada percorsa calcolando la y rispetto all' orizzonte e serve anche a
+//  restituire i limiti della strada in senso orizzontale
 function roadAt(y) {
   const progress = Math.max(0, Math.min(1, (y - HORIZON) / (HEIGHT - HORIZON)));
   return {
@@ -95,11 +96,12 @@ function roadAt(y) {
     progress,
   };
 }
-
+//serve a scegliere l'ambiente attuale in base alla distanza percorsa e aripetere ciclicamente gli ambienti
 function currentLandscape() {
   return LANDSCAPES[Math.floor(distance / SEGMENT_LENGTH) % LANDSCAPES.length];
 }
-
+//serve a calcolare il centro della corsia in base al numero della corsia per rimettere il traffico al centro della corsia e 
+//anche per rimetterlo sulla corsia più a sinistra possibile, il tutto tenendo presente della corsia di emergenza
 function laneCenter(lane, y) {
   const laneWidth = CARRIAGEWAY_WIDTH / 2;
   if (lane < 2) {
@@ -108,20 +110,23 @@ function laneCenter(lane, y) {
   const rightRoadLeft = ROAD_CENTER + MEDIAN_WIDTH / 2;
   return rightRoadLeft + (lane - 2 + 0.5) * laneWidth;
 }
-
+//serve a convertire i metri in chilomentri nel caso in cui fosse più conveniente farlo, altrimenti serve soltanto a dare
+//la misura corretta alla distanza percorsa e al record personale con due decimali
 function formatDistance(meters) {
   if (meters >= 1000) {
     return `${(meters / 1000).toFixed(2)} km`;
   }
   return `${Math.floor(meters)} m`;
 }
-
+//serve a calcolare i giri motore tenendo conto della velocità, della velocita max delle marce e dei giri motore massimi e minimi
+//se il player è fermo dà i giri motore minimi
 function engineRpm() {
   return speed === 0
     ? IDLE_RPM
     : Math.min(MAX_RPM, IDLE_RPM + (speed / GEAR_MAX_SPEEDS[currentGear - 1]) * (MAX_RPM - IDLE_RPM));
 }
-
+//serve ad aggiornare in tempo reale l'intero HUD:distanza percorsa, record personale, velocità corrente, giri motore, temperature olio e 
+//refrigerante, orologio, marcia ingaggiata, vite rimaste 
 function updateHud() {
   const rpm = engineRpm();
   scoreEl.textContent = formatDistance(distance);
@@ -144,7 +149,7 @@ function updateHud() {
   livesEl.setAttribute('aria-label', `${lives} ${lives === 1 ? 'life' : 'lives'}`);
   lifeHearts.forEach((heart, index) => heart.classList.toggle('is-lost', index >= lives));
 }
-
+//serve innanzitutto a controlare che la marcia impostata esista, poi la imposta come marcia corrente e la aggiorna sull'HUD
 function selectGear(gear) {
   if (gear < 1 || gear > GEAR_MAX_SPEEDS.length) {
     return;
@@ -152,20 +157,20 @@ function selectGear(gear) {
   currentGear = gear;
   updateHud();
 }
-
+//serve a mostrare-nascondere l'overlay di testo e titolo (quello all'inizio e fine partita)
 function setOverlay(title, text, visible) {
   overlayTitle.textContent = title;
   overlayText.textContent = text;
   overlay.classList.toggle('visible', visible);
 }
-
+//serve a resettare tutta l'interfaccia del HUD e impostare i valori iniziali
 function resetGame() {
   distance = 0;
   lives = STARTING_LIVES;
   speed = 0;
   currentGear = 1;
   oilTemperature = 80;
-  coolantTemperature = 82;
+  coolantTemperature = 120;
   autoAccelerating = true;
   roadOffset = 0;
   trafficClock = 0.5;
@@ -178,7 +183,7 @@ function resetGame() {
   player.steer = 0;
   updateHud();
 }
-
+//serve a far iniziare il gioco, resettando il gioco, togliendo la schermata iniziale, accendendo il ghost e ad aggiornare lo stato di gioco
 function startGame() {
   resetGame();
   startInvulnerable = true;
@@ -186,7 +191,8 @@ function startGame() {
   setOverlay('', '', false);
   startBtn.disabled = false;
 }
-
+//serve a far terminare la partita, salvando il record della distanza percorsa, mostrando di nuovo la schermata di ending e aggiornando
+//lo stato di gioco
 function endGame() {
   gameState = 'ended';
   if (distance > bestDistance) {
@@ -196,7 +202,8 @@ function endGame() {
   updateHud();
   setOverlay('Run over', `You drove ${formatDistance(distance)}. Press W or ↑ to run again.`, true);
 }
-
+//serve ad assegnare la velocità ad ogni veicolo del traffico in base al tipo di veicolo (casuale con un massimo valore) e una direzione
+//(circolazione a destra o a sinistra) 
 function trafficSpeedFor(modelId, direction) {
   if (modelId === 'car-carrier') {
     return 65 + Math.random() * 25;
@@ -211,7 +218,8 @@ function trafficSpeedFor(modelId, direction) {
     ? 70 + Math.random() * 55
     : 210 + Math.random() * 85;
 }
-
+//serve a spawnare i veicoli del traffico e ad assegnarli velocità, direzione e corsia, evitando di spawnare veicoli ammassati uno sopra
+//l'altro
 function spawnTraffic() {
   const model = TRAFFIC_MODELS[nextTrafficModel % TRAFFIC_MODELS.length];
   const direction = nextTrafficModel % 2 === 0 ? 'same' : 'oncoming';
@@ -241,17 +249,18 @@ function spawnTraffic() {
     ...model,
   });
 }
-
+//serve a calcolare la distanza tra il veicolo e un soggetto, che esso sia un altro veicolo o un oggetto, tenendo conto del senso di marcia
 function trafficGap(car, obstacle) {
   return car.direction === 'same'
     ? car.y - obstacle.y
     : obstacle.y - car.y;
 }
-
+//serve a calcolare la distanza inima di sicurezza tra 2 veicoli, considerando le loro dimensioni
 function trafficSafeGap(car, obstacle) {
   return (car.renderHeight + obstacle.renderHeight) / 2 + 10;
 }
-
+//serve a verificare in che corsia si trova il player, in modo che il traffico possa adattarsi
+// i veicoli che vanno in direzione opposta non subiscono variazioni
 function playerIsInLane(car, lane) {
   if (car.direction !== 'same') {
     return false;
@@ -259,7 +268,7 @@ function playerIsInLane(car, lane) {
   return Math.abs(laneCenter(lane, player.y) - player.x)
     < (PLAYER_WIDTH + car.renderWidth) * 0.39;
 }
-
+//controlla l'ostacolo più vicino davanti ad un veicolo considerando la corsia in cui si trova, il traffico e il player
 function findTrafficAhead(car, lane) {
   let nearest = null;
   for (const other of traffic) {
@@ -284,7 +293,8 @@ function findTrafficAhead(car, lane) {
   }
   return nearest;
 }
-
+//controlla se un veicolo possa spostarsi nella corsia di superamento senza avvicinarsi pericolosamente ad altri veicoli o al player
+//considerando anche la velocità di avvicinamento e la distanza minima di sicurezza
 function canTrafficUseLane(car, lane) {
   for (const other of traffic) {
     if (other === car || other.direction !== car.direction || other.lane !== lane) {
@@ -314,7 +324,7 @@ function canTrafficUseLane(car, lane) {
   }
   return true;
 }
-
+//serve ad impedire ad un veicolo di mettersi nella corsia di superamento se rischia di tagliar la strada al player
 function canPassWithoutCuttingOffPlayer(car, passingLane) {
   if (!playerIsInLane(car, passingLane)) {
     return true;
@@ -328,13 +338,14 @@ function canPassWithoutCuttingOffPlayer(car, passingLane) {
 
   return false;
 }
-
+//serve ad aggiornare lo stato del veicolo: corsia, superamento di un ostacolo o del player
 function changeTrafficLane(car, lane, obstacle = null) {
   car.lane = lane;
   car.passingObstacle = obstacle;
   car.passingPlayer = lane !== car.defaultLane && obstacle === null;
 }
-
+//serve a gestire la logica completa del sistema di superamento di un veicolo, valutando ostacoli, corsie disponibili, distanze di
+//sicurezza minime, rallentamenti dei veicoli e ritorno alla corsia di viaggio normale (destra)
 function updateTrafficLanes() {
   for (const car of traffic) {
     car.speed = car.cruiseSpeed;
@@ -404,7 +415,8 @@ function updateTrafficLanes() {
     }
   }
 }
-
+//serve a gestire i veicoli del traffico: quando spawnano e despawnano (quando escono dallo schermo), controllo delle colisioni 
+//(se c'è collisione, meno una vita), quando finiscono le vite finisce la partita
 function updateTraffic(dt) {
   trafficClock -= dt;
   if (trafficClock <= 0) {
@@ -446,7 +458,8 @@ function updateTraffic(dt) {
   }
   return true;
 }
-
+//serve ad aggiornare lo stato del gioco in completezza: velocità, accelerazione, frenata, temperature, posizione del player,
+//sterzata, la strada, la distanza percorsa, il ghost, il traffico e la distanza record
 function updateGame(dt) {
   if (gameState !== 'playing') {
     return;
@@ -470,7 +483,7 @@ function updateGame(dt) {
 
   const engineLoad = (engineRpm() - IDLE_RPM) / (MAX_RPM - IDLE_RPM);
   oilTemperature += (80 + engineLoad * 35 - oilTemperature) * Math.min(1, dt * 0.12);
-  coolantTemperature += (82 + engineLoad * 12 - coolantTemperature) * Math.min(1, dt * 0.16);
+  coolantTemperature = coolantTemperature + (120 + engineLoad * 12 - coolantTemperature) * Math.min(1, dt * 0.16);
 
   const accelerating = (autoAccelerating || keys.accelerate) && !keys.brake;
   const playerYTarget = PLAYER_Y - PLAYER_ACCELERATION_SHIFT
@@ -495,7 +508,7 @@ function updateGame(dt) {
   }
   updateHud();
 }
-
+//disegna lo scenario, colorandoli e aggiungendo elementi
 function drawScenery() {
   const landscape = currentLandscape();
   const sideColor = landscape.name === 'CANYON' ? '#835c42'
@@ -537,7 +550,7 @@ function drawScenery() {
     }
   }
 }
-
+//disegna la strada, le strisce, la corsia di sicurezza, lo spartitraffico; usa lo scorrimennto per dare un senso di movimento alla strada
 function drawRoad() {
   const laneWidth = CARRIAGEWAY_WIDTH / 2;
   const leftCarriagewayLeft = ROAD_LEFT + SHOULDER_WIDTH;
@@ -609,7 +622,7 @@ function drawRoad() {
   ctx.fillRect(ROAD_CENTER - MEDIAN_WIDTH / 2, 0, 2, HEIGHT);
   ctx.fillRect(ROAD_CENTER + MEDIAN_WIDTH / 2 - 2, 0, 2, HEIGHT);
 }
-
+//serve a calcolare le posizioni dei cartelli ai lati della carreggiata e a disegnare la funzione del cartello
 function drawRoadSigns() {
   const signSpacing = 210;
   const signOffset = (roadOffset * 1.4) % signSpacing;
@@ -623,7 +636,7 @@ function drawRoadSigns() {
     drawPixelSpeedSign(WIDTH - 36, y + signSpacing / 2, 130);
   }
 }
-
+//serve a disegnare i cartelli di limite di velocità
 function drawPixelSpeedSign(x, y, limit) {
   const pixelSize = 3;
   const radius = 6;
@@ -653,7 +666,7 @@ function drawPixelSpeedSign(x, y, limit) {
   ctx.textAlign = 'start';
   ctx.textBaseline = 'alphabetic';
 }
-
+//disegna i veicoli, seguendo una procedura; aggiunge animazioni ai veicoli
 function drawCar(x, y, width, height, color, isPlayer = false, style = 'car') {
   ctx.save();
   ctx.translate(x - width / 2, y - height / 2);
@@ -676,7 +689,7 @@ function drawCar(x, y, width, height, color, isPlayer = false, style = 'car') {
   ctx.shadowBlur = 0;
   ctx.shadowOffsetY = 0;
 
-  const bodyPath = () => {
+  const bodyPath = () => {                              //serve a definire il contorno della carrozzeria
     ctx.beginPath();
     if (style === 'van' && !isPlayer) {
       ctx.moveTo(10, 2);
@@ -942,7 +955,7 @@ function drawCar(x, y, width, height, color, isPlayer = false, style = 'car') {
 
   ctx.restore();
 }
-
+//fa in modo di aggiungere gli effetti di schiarimento-scuramento a un colore
 function shadeColor(hex, amount) {
   const value = Number.parseInt(hex.slice(1), 16);
   const red = Math.max(0, Math.min(255, (value >> 16) + amount));
@@ -950,7 +963,7 @@ function shadeColor(hex, amount) {
   const blue = Math.max(0, Math.min(255, (value & 0xff) + amount));
   return `rgb(${red}, ${green}, ${blue})`;
 }
-
+//serve a creare e restituire il canvas della pixel art di un veicolo 
 function createTrafficSprite(modelId) {
   const sprite = document.createElement('canvas');
   sprite.width = modelId === 'car-carrier' ? 48 : 32;
@@ -958,7 +971,7 @@ function createTrafficSprite(modelId) {
   const pixel = sprite.getContext('2d');
   pixel.imageSmoothingEnabled = false;
 
-  function block(x, y, color, width = 1, height = 1) {
+  function block(x, y, color, width = 1, height = 1) {   //serve a creare un rettangolo colorato 
     pixel.fillStyle = color;
     pixel.fillRect(x, y, width, height);
   }
@@ -1162,7 +1175,7 @@ function createTrafficSprite(modelId) {
 
   return sprite;
 }
-
+//disegna tutti i veicoli, li posiziona nella corsia corretta e cambia senso di marcia seguendo le direzioni
 function drawTraffic() {
   for (const car of traffic) {
     const x = laneCenter(car.lanePosition ?? car.lane, car.y);
@@ -1181,7 +1194,7 @@ function drawTraffic() {
     ctx.restore();
   }
 }
-
+//disegna il veicolo del player, li da i movimenti e fa fare gli effetti di ghosting
 function drawPlayer() {
   if (!playerImage.complete || playerImage.naturalWidth === 0) {
     return;
@@ -1200,7 +1213,7 @@ function drawPlayer() {
   ctx.drawImage(playerImage, -PLAYER_WIDTH / 2, -PLAYER_HEIGHT / 2, PLAYER_WIDTH, PLAYER_HEIGHT);
   ctx.restore();
 }
-
+//serve a disegnare il fotogramma completo seguendo l'ordine: paesaggio, strada, cartelli, traffico e player
 function draw() {
   drawScenery();
   drawRoad();
@@ -1208,7 +1221,7 @@ function draw() {
   drawTraffic();
   drawPlayer();
 }
-
+//serve per il ciclo continuo: calcola il tempo tra un fotogramma e l'altro, aggiorna il gioco, disegna la scena e il fotogramma dopo
 function gameLoop(timestamp) {
   const dt = Math.min((timestamp - lastTimestamp) / 1000 || 0.016, 0.04);
   lastTimestamp = timestamp;
@@ -1216,11 +1229,11 @@ function gameLoop(timestamp) {
   draw();
   requestAnimationFrame(gameLoop);
 }
-
+//serve ad impostare lo stato di un comando di sterzata (premuto-rilasciato)
 function setSteering(direction, pressed) {
   keys[direction] = pressed;
 }
-
+//gestisce i tasti di direzione del veicolo e delle marce
 window.addEventListener('keydown', (event) => {
   if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' '].includes(event.key)) {
     event.preventDefault();
@@ -1240,7 +1253,7 @@ window.addEventListener('keydown', (event) => {
     keys.brake = true;
   }
 });
-
+//serve a dare un comando quando si rilascia un tasto
 window.addEventListener('keyup', (event) => {
   if (event.key === 'ArrowLeft' || event.key.toLowerCase() === 'a') {
     setSteering('left', false);
@@ -1252,7 +1265,7 @@ window.addEventListener('keyup', (event) => {
     keys.brake = false;
   }
 });
-
+//serve a 'spegnere' i comandi quando si chiude al finestra
 window.addEventListener('blur', () => {
   keys.left = false;
   keys.right = false;
@@ -1262,21 +1275,21 @@ window.addEventListener('blur', () => {
 
 for (const [id, direction] of [['steer-left', 'left'], ['steer-right', 'right']]) {
   const button = document.getElementById(id);
-  button.addEventListener('pointerdown', (event) => {
+  button.addEventListener('pointerdown', (event) => {     //serve ad attivare la sterzata da un comando touch e 'cattura' il puntatore
     event.preventDefault();
     button.setPointerCapture(event.pointerId);
     setSteering(direction, true);
   });
-  button.addEventListener('pointerup', () => setSteering(direction, false));
+  button.addEventListener('pointerup', () => setSteering(direction, false));     //serve a disattivarla quando finisce il comando
   button.addEventListener('pointercancel', () => setSteering(direction, false));
   button.addEventListener('lostpointercapture', () => setSteering(direction, false));
 }
-
+//avvia la partita richiamando lo stato di inizio partita
 startBtn.addEventListener('click', startGame);
 gearButtons.forEach((button) => {
   button.addEventListener('click', () => selectGear(Number(button.dataset.gear)));
 });
-
+//serve a inizializzare la distanza percorsa, richiama lo stato di inizio gioco, disabilita il bottone start e avvia il ciclo 'frame'
 bestScoreEl.textContent = formatDistance(bestDistance); {
 resetGame();
 startBtn.disabled = true;
