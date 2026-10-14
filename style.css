@@ -306,7 +306,7 @@ h1 {
 .gauge-face::after {
   position: absolute;
   inset: 12%;
-  border: 1px solid rgba(197, 223, 199, 0.16);
+  border: 1px solid rgb(255, 255, 255);
   border-radius: 50%;
   content: "";
 }
@@ -343,8 +343,8 @@ h1 {
   width: 2px;
   height: 36%;
   border-radius: 2px;
-  background: #ff6258;
-  box-shadow: 0 0 7px rgba(255, 76, 69, 0.72);
+  background: #00f529b2;
+  box-shadow: 0 0 7px rgba(69, 255, 69, 0.72);
   transform: rotate(var(--needle-angle));
   transform-origin: center bottom;
   transition: transform 0.14s ease-out;
