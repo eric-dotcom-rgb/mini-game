@@ -1,122 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#101b20" />
-    <title>Redline Run</title>
-    <link rel="stylesheet" href="style.css" />
+  Pagani Vs Traffic
+  <link rel="stylesheet" href="style.css">
   </head>
-  <body>
-    <main class="game-shell">
-      <header class="topbar">
-        <div>
-          <p class="eyebrow">A little highway challenge</p>
-          <h1>Redline Run</h1>
-        </div>
-      </header>
-
-      <section class="dashboard" aria-label="Vehicle dashboard">
-        <div class="instrument-cluster">
-          <div class="gauge-pair">
-            <div class="gauge-card">
-              <div class="gauge-face speed-gauge" id="speed-gauge" role="img" aria-label="Speed: 0 kilometers per hour">
-                <span class="gauge-tick gauge-tick-start">0</span>
-                <span class="gauge-tick gauge-tick-mid">200</span>
-                <span class="gauge-tick gauge-tick-end">400</span>
-                <span class="gauge-needle" aria-hidden="true"></span>
-                <span class="gauge-value" id="speed">0</span>
-                <span class="gauge-unit">KM/H</span>
+    <body>
+      <div class="scheletro gioco">
+        <canvas id="canvas" width="1080" height="500">
+        </canvas>
+        <div class="quadro strumenti">
+          <div class="quadro RPM">
+          <div class="sfondo RPM">
+          <div class="lancetta RPM" id="lancettarpm"></div>
+          <div class="numeri RPM">
+                <span id="valoreRPM0">0</span>
+                <span id="valoreRPM1">5</span>
+                <span id="valoreRPM2">10</span>
+                <span id="valoreRPM3">15</span>
+                <span id="valoreRPM4">20</span>
+                <span id="valoreRPM5">25</span>
+                <span id="valoreRPM6">30</span>
+                <span id="valoreRPM7">35</span>
+                <span id="valoreRPM8">40</span>
+                <span id="valoreRPM9">45</span>
+                <span id="valoreRPM10">50</span>
+                <span id="valoreRPM11">55</span>
+                <span id="valoreRPM12">60</span>
+                <span id="valoreRPM13">65</span>
+                <span id="valoreRPMnull">RPM x100</span>
+          </div>
+          </div>
+          </div>
+              <div class="quadro kmh">
+              <div class="sfondo kmh">
+              <div class="lancetta kmh" id="lancettakmh"></div>
+              <div class="numeri kmh">
+                    <span id="valorekmh0">0</span>
+                    <span id="valorekmh1">50</span>
+                    <span id="valorekmh2">100</span>
+                    <span id="valorekmh3">150</span>
+                    <span id="valorekmh4">200</span>
+                    <span id="valorekmh5">250</span>
+                    <span id="valorekmh6">300</span>
+                    <span id="valorekmh7">350</span>
+                    <span id="valorekmh8">400</span>
+                    <span id="valorekmh9">Kilometers/Hour</span>
               </div>
-              <span class="gauge-title">SPEED</span>
-            </div>
-            <div class="gauge-card">
-              <div class="gauge-face rpm-gauge" id="rpm-gauge" role="img" aria-label="Engine speed: 900 revolutions per minute">
-                <span class="gauge-tick gauge-tick-start">0</span>
-                <span class="gauge-tick gauge-tick-mid">4</span>
-                <span class="gauge-tick gauge-tick-end">8</span>
-                <span class="gauge-needle" aria-hidden="true"></span>
-                <span class="gauge-value" id="rpm">0.9</span>
-                <span class="gauge-unit">x1000 RPM</span>
               </div>
-              <span class="gauge-title">TACHOMETER</span>
-            </div>
-          </div>
-          <div class="vehicle-readouts">
-            <div class="temp-readouts">
-              <div class="matrix-screen temperature-screen">
-                <span class="matrix-label">OIL TEMP</span>
-                <strong><span id="oil-temperature">80</span><small>°C</small></strong>
               </div>
-              <div class="matrix-screen temperature-screen">
-                <span class="matrix-label">COOLANT</span>
-                <strong><span id="coolant-temperature">82</span><small>°C</small></strong>
-              </div>
-            </div>
-            <div class="matrix-screen clock-screen">
-              <span class="matrix-label">LOCAL TIME</span>
-              <strong id="clock">00:00</strong>
-              <span class="matrix-label outside-label">OUTSIDE <strong id="outside-temperature">18°C</strong></span>
-            </div>
-            <div class="gear-selector" role="group" aria-label="Select gear using number keys 1 to 6">
-              <span class="gear-selector-label">GEAR / MAX SPEED</span>
-              <div class="gear-buttons">
-                <button class="gear-button is-selected" type="button" data-gear="1" aria-pressed="true">1<span>70</span></button>
-                <button class="gear-button" type="button" data-gear="2" aria-pressed="false">2<span>110</span></button>
-                <button class="gear-button" type="button" data-gear="3" aria-pressed="false">3<span>170</span></button>
-                <button class="gear-button" type="button" data-gear="4" aria-pressed="false">4<span>240</span></button>
-                <button class="gear-button" type="button" data-gear="5" aria-pressed="false">5<span>310</span></button>
-                <button class="gear-button" type="button" data-gear="6" aria-pressed="false">6<span>380</span></button>
-              </div>
-              <span class="gear-speed-unit">KM/H</span>
-            </div>
+                  <div class="quadro marcia">
+                  <span id="marciainnestata">N</span>
+                  </div>
           </div>
         </div>
-
-        <div class="score-stack" aria-label="Run scores">
-          <button id="start-btn" class="retry-btn" type="button" disabled>RETRY</button>
-          <div class="matrix-screen score-screen">
-            <span class="matrix-label">BEST SCORE</span>
-            <strong id="best-score">0 m</strong>
-          </div>
-          <div class="matrix-screen score-screen">
-            <span class="matrix-label">CURRENT</span>
-            <strong id="score">0 m</strong>
-          </div>
-        </div>
-
-        <div class="vertical-lives" id="lives" aria-label="3 lives">
-          <span class="lives-label">LIVES</span>
-          <div class="life-hearts" aria-hidden="true">
-            <span class="life-heart">♥</span>
-            <span class="life-heart">♥</span>
-            <span class="life-heart">♥</span>
-          </div>
-        </div>
-      </section>
-
-      <div class="game-frame">
-        <canvas id="gameCanvas" width="720" height="600" aria-label="Pixel-art Italian motorway with two lanes per direction"></canvas>
-        <div id="overlay" class="overlay visible">
-          <div class="overlay-card">
-            <p class="overlay-kicker">Two carriageways. Two lanes each.</p>
-            <h2 id="overlay-title">The road is yours.</h2>
-            <p id="overlay-text">Press W or ↑ to start and accelerate. You’re protected from traffic until you reach 60 km/h. Select gears with 1–6: each gear has its own speed limit. Hold S or ↓ to brake.</p>
-          </div>
-        </div>
-      </div>
-
-      <section class="controls" aria-label="Driving controls">
-        <span class="control-hint"><kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> to steer</span>
-        <span class="control-hint"><kbd>W</kbd> / <kbd>↑</kbd> accelerate</span>
-        <span class="control-hint"><kbd>S</kbd> / <kbd>↓</kbd> brake</span>
-        <div class="touch-controls" aria-label="Touch steering">
-          <button class="steer-btn" id="steer-left" aria-label="Steer left">←</button>
-          <button class="steer-btn" id="steer-right" aria-label="Steer right">→</button>
-        </div>
-      </section>
-    </main>
-
-    <script src="game.js"></script>
-  </body>
+    </body>
 </html>
