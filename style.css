@@ -1,32 +1,179 @@
+/*carica il font*/
+@font-face {
+  font-family: 'QuintessentialLocal';
+  src: url('Quintessential-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/*serve a far rispettar le regole del dimensionamento del gioco( respekt >:-( )*/
 *{
  box-sizing: border-box;
 }
 
+/*posizionamento del tutto con font e colori*/
 body{   
-  margin:0;
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items: center;
-  background-color:navy;
-  font-family:"Quintessential", monospace;
+  margin:0; height:100vh;
+  display:flex; justify-content:center; align-items: center;
+  background-color:rgb(54, 73, 180);
+  font-family:"QuintessentialLocal", monospace;
 }
 
+/*le dimensioni della schermata di gioco con ordine delle cose e colore*/
 .scheletro.gioco{          
-  width:1200px;
-  height:850px;
-  padding:20px;
+  width:1200px; height:850px; padding:20px;
   background-color: lightgoldenrodyellow;
   border:2px solid rgba(255, 255, 250, 0.1);
   border-radius: 20px;
-  display: flex;
-  flex-direction: column;
+  display: flex; flex-direction: column;
 }
 
+/*il canvas è dove sarà posizionato lo schermo dove si gioca e i quadranti*/
 #canvas{
-  width: 100%;
-  height: 100%;
+  width: 100%; height: 100%;
   background-color: darkolivegreen;
   display:block;
+  border-radius: 20px;
 }
 
+/*qudro strumenti della macchina con ordine delle cose, colore e forma*/
+.quadro.strumenti{
+  display:flex; justify-content: space-around; align-items: center;
+  margin-top: auto;
+  padding: 15px 25px;
+  background-color: darkseagreen;
+  border-radius: 20px;
+}
+
+/*estetica quadranti kmh e rpm*/
+.sfondo.RPM, .sfondo.kmh{
+  position: relative;
+  width: 150px; height: 150px;
+  border: 3px solid burlywood;
+  border-radius: 50%;
+  background-color: cadetblue;
+}
+
+/*estetica lancette kmh e rpm*/
+#lancettarpm, #lancettakmh{
+  position: absolute;  /*per posizionarla al di sopra del bordo del canvas*/
+  bottom: 50%;  /*per posizionarla al centro*/
+  left: calc(50% - 1.5px);
+  width: 3px; height: 46%;
+  background: linear-gradient(to top, deepskyblue 80%, whitesmoke 80%);
+  transform-origin: center bottom;   /*spiega che il centro della lancetta è la parte bassa*/
+  transform: rotate(-150deg);
+}
+
+/*marceee*/
+.quadro.marcia{
+  width:60px; height:70px;
+  display:flex; justify-content: center; align-items: center;
+  border: 3px solid burlywood;
+  border-radius: 3px;
+  background-color: cadetblue;
+}
+
+/*numero marcia*/
+#marciainnestata{
+  font-size: 2.2rem; font-weight: bolder; color: whitesmoke;
+}
+
+/*posizionamento numeri sul cerchio*/
+.sfondo.RPM span, .sfondo.kmh span{
+  position: absolute; top: 10px; left:50%;
+  transform-origin: 50% 65px;   /*cambiare px se diametro cambia*/
+  font-size: 0.75rem; width:20px; font-weight: bold; color: whitesmoke;
+  text-align: center;
+  margin-left: -10px;
+}
+
+/*rotazione numeri dentro RPM*/
+#valoreRPM0{
+  transform: rotate(calc(-150deg + 0 * (300deg / 13)));
+}
+#valoreRPM1{
+  transform: rotate(calc(-150deg + 1 * (300deg / 13)));
+}
+#valoreRPM2{
+  transform: rotate(calc(-150deg + 2 * (300deg / 13)));
+}
+#valoreRPM3{
+  transform: rotate(calc(-150deg + 3 * (300deg / 13)));
+}
+#valoreRPM4{
+  transform: rotate(calc(-150deg + 4 * (300deg / 13)));
+}
+#valoreRPM5{
+  transform: rotate(calc(-150deg + 5 * (300deg / 13)));
+}
+#valoreRPM6{
+  transform: rotate(calc(-150deg + 6 * (300deg / 13)));
+}
+#valoreRPM7{
+  transform: rotate(calc(-150deg + 7 * (300deg / 13)));
+}
+#valoreRPM8{
+  transform: rotate(calc(-150deg + 8 * (300deg / 13)));
+}
+#valoreRPM9{
+  transform: rotate(calc(-150deg + 9 * (300deg / 13)));
+}
+#valoreRPM10{
+  transform: rotate(calc(-150deg + 10 * (300deg / 13)));
+}
+#valoreRPM11{
+  transform: rotate(calc(-150deg + 11 * (300deg / 13)));
+}
+#valoreRPM12{
+  transform: rotate(calc(-150deg + 12 * (300deg / 13)));
+}
+#valoreRPM13{
+  transform: rotate(calc(-150deg + 13 * (300deg / 13)));
+}
+
+/*la scritta del valore NON deve esser collegata ai numeri che girano quindi l origine si annulla e si rifa l'allineamento*/
+#valoreRPMnull{
+  transform: none; transform-origin: initial;
+  left: 0; width: 100%; margin-left: 0;      /*per centrare testo*/
+  top: 95px;                                 /*per spostare testo*/
+  text-align: center;
+
+}
+
+/*rotazione numeri dentro kmh*/
+#valorekmh0{
+  transform: rotate(calc(-150deg + 0 * (300deg / 9)));
+}
+#valorekmh1{
+  transform: rotate(calc(-150deg + 1 * (300deg / 9)));
+}
+#valorekmh2{
+  transform: rotate(calc(-150deg + 2 * (300deg / 9)));
+}
+#valorekmh3{
+  transform: rotate(calc(-150deg + 3 * (300deg / 9)));
+}
+#valorekmh4{
+  transform: rotate(calc(-150deg + 4 * (300deg / 9)));
+}
+#valorekmh5{
+  transform: rotate(calc(-150deg + 5 * (300deg / 9)));
+}
+#valorekmh6{
+  transform: rotate(calc(-150deg + 6 * (300deg / 9)));
+}
+#valorekmh7{
+  transform: rotate(calc(-150deg + 7 * (300deg / 9)));
+}
+#valorekmh8{
+  transform: rotate(calc(-150deg + 8 * (300deg / 9)));
+}
+
+/*la scritta del valore NON deve esser collegata ai numeri che girano quindi l origine si annulla e si rifa l'allineamento*/
+#valorekmhnull{
+  transform: none; transform-origin: initial;
+  left: 0; width: 100%; margin-left: 0;      /*per centrare testo*/
+  top: 95px;                                 /*per spostare testo*/
+  text-align: center; font-size: 0.5rem ;
+}
