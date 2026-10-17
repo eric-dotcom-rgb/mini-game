@@ -1,22 +1,27 @@
-const canvas = document.getElementById('gameCanvas');                      //pagina principale
+const canvas = document.getElementById('canvas');                      //pagina principale
 const ctx = canvas.getContext('2d');
-
-const scoreEl = document.getElementById('score');
-const bestScoreEl = document.getElementById('best-score');
-const speedEl = document.getElementById('speed');
-const rpmEl = document.getElementById('rpm');
-const speedGaugeEl = document.getElementById('speed-gauge');
-const rpmGaugeEl = document.getElementById('rpm-gauge');
-const oilTemperatureEl = document.getElementById('oil-temperature');
-const coolantTemperatureEl = document.getElementById('coolant-temperature');
-const clockEl = document.getElementById('clock');
-const livesEl = document.getElementById('lives');
-const lifeHearts = [...livesEl.querySelectorAll('.life-heart')];
-const gearButtons = [...document.querySelectorAll('.gear-button')];
-const overlay = document.getElementById('overlay');
-const overlayTitle = document.getElementById('overlay-title');
-const overlayText = document.getElementById('overlay-text');
-const startBtn = document.getElementById('start-btn');
+const playlist = ['Wanden, Slashtaq - Full Speed Ahead [NCS Release].mp3', 'Fareoh - Under Water [NCS Release].mp3', 'Cepaque - Alone Tonight [NCS Release].mp3']      //playlist di sottofondo
+let   currentTrackIndex = 0;                                    //partenza playlist
+let   soundtrack = new Audio(playlist[currentTrackIndex]);
+      soundtrack.volume = 0.4;
+      soundtrack.addEventListener('ended', () =>{    //skip automatico
+        currentTrackIndex++;
+        if (currentTrackIndex >= playlist.lenght) {      //quando finisce, ricomincia
+          currentTrackIndex = 0;
+        }
+      soundtrack.src = playlist[currentTrackIndex];
+      soundtrack.play().catch(e => consolelog("Errore cambio traccia:", e));  //playlist errore soundtrack(carica nuovo brano)
+      });
+const lancettarpm = document.getElementById('lancettarpm');
+const lancettakmh = document.getElementById('lancettakmh');
+const marciainnestata = document.getElementById('marciainnestata');
+const gearButtons = document.querySelectorAll('[data-gear]');
+const oilTemperatureEl = document.getElementById('tempOlio');
+const coolantTemperatureEl = document.getElementById('tempAcqua');
+const distanceEl = document.getElementById('distanzaAttuale');
+const bestDistanceEl = document.getElementById('distanzaRecord');
+const livesEl = document.getElementById('vite');
+const lifeHearts = livesEl.querySelectorAll('img');
 
 const WIDTH = canvas.width;
 const HEIGHT = canvas.height;                                  //limiti e impostazioni auto
@@ -45,17 +50,19 @@ const BRAKE_DECELERATION = 80;
 const ROAD_SCROLL_PER_KMH = 2.3;
 const PLAYER_POSITION_EASING = 6;
 const TRAFFIC_LANE_CHANGE_LOOKAHEAD = 2;
-const PLAYER_WIDTH = 75.6 * 0.8;
-const PLAYER_HEIGHT = 118.8 * 0.8;
+const PLAYER_WIDTH = 80;
+const PLAYER_HEIGHT = 12;
 const STARTING_LIVES = 3;
 const COLLISION_COOLDOWN = 1.15;
+
 const TRAFFIC_MODELS = [                                                         //auto del traffico in lista con le loro caratteristiche
-  { id: 'svj', name: 'SVJ', color: '#e3c51e', renderWidth: 62, renderHeight: 100 },
-  { id: 'chiron', name: 'Chiron Pur Sport', color: '#102d58', renderWidth: 62, renderHeight: 100 },
-  { id: 'car-carrier', name: 'Car carrier', color: '#b82727', renderWidth: 72, renderHeight: 170 },
-  { id: 'ninja-bike', name: 'Green H2R', color: '#58bd32', renderWidth: 34, renderHeight: 100 },
-  { id: 'harley-bike', name: 'Harley-Davidson cruiser', color: '#e6e4dc', renderWidth: 38, renderHeight: 100 },
+  { id: 'svj', name: 'SVJ', sprite: 'lamborghini.png', renderWidth: 80, renderHeight: 120 },
+  { id: 'chiron', name: 'Chiron Pur Sport', sprite: 'bugatti.png', renderWidth: 80, renderHeight: 120 },
+  { id: 'camion', name: 'Car carrier', color: '#b82727', sprite: 'camion.png', renderWidth: 80, renderHeight: 170 },
+  { id: 'ninja-bike', name: 'Green H2R', color: '#58bd32', sprite: 'ninjah2.png', renderWidth: 50, renderHeight: 100 },
+  { id: 'harley-bike', name: 'Harley-Davidson cruiser', color: '#e6e4dc', sprite: 'harley.png', renderWidth: 50, renderHeight: 100 },
 ];
+
 const LANDSCAPES = [                                                             //ambiente di gioco con colori per strada e terreno
   { name: 'CITY', ground: ['#747f70', '#3e5147'], road: ['#515857', '#303738'] },
   { name: 'CANYON', ground: ['#a7754f', '#704b37'], road: ['#5a5751', '#353634'] },
@@ -64,7 +71,7 @@ const LANDSCAPES = [                                                            
 ];
 const SEGMENT_LENGTH = 600;
 const SIGN_INTERVAL = 300;
-                                                                                                                      //quando è sulla schermata d' inizio
+//quando è sulla schermata d' inizio
 let gameState = 'ready';                                          
 let distance = 0;
 let bestDistance = Number(localStorage.getItem('redline-run-best') || 0);
@@ -85,7 +92,11 @@ const keys = { left: false, right: false, accelerate: false, brake: false };
 const player = { x: 0, y: PLAYER_Y, steer: 0 };
 const playerImage = new Image();
 playerImage.src = 'players car.png';
-const trafficSprites = new Map(TRAFFIC_MODELS.map((model) => [model.id, createTrafficSprite(model.id)]));
+const trafficSprites = new Map(TRAFFIC_MODELS.map((model) => {
+  const sprite = new Image();
+  sprite.src = model.sprite;
+  return [model.id, sprite];
+}));
 //serve a calcolare la strada percorsa calcolando la y rispetto all' orizzonte e serve anche a
 //  restituire i limiti della strada in senso orizzontale
 function roadAt(y) {
@@ -101,7 +112,7 @@ function currentLandscape() {
   return LANDSCAPES[Math.floor(distance / SEGMENT_LENGTH) % LANDSCAPES.length];
 }
 //serve a calcolare il centro della corsia in base al numero della corsia per rimettere il traffico al centro della corsia e 
-//anche per rimetterlo sulla corsia più a sinistra possibile, il tutto tenendo presente della corsia di emergenza
+//anche per rimetterlo sulla corsia più a destra possibile, il tutto tenendo presente della corsia di emergenza
 function laneCenter(lane, y) {
   const laneWidth = CARRIAGEWAY_WIDTH / 2;
   if (lane < 2) {
@@ -110,13 +121,8 @@ function laneCenter(lane, y) {
   const rightRoadLeft = ROAD_CENTER + MEDIAN_WIDTH / 2;
   return rightRoadLeft + (lane - 2 + 0.5) * laneWidth;
 }
-//serve a convertire i metri in chilomentri nel caso in cui fosse più conveniente farlo, altrimenti serve soltanto a dare
-//la misura corretta alla distanza percorsa e al record personale con due decimali
 function formatDistance(meters) {
-  if (meters >= 1000) {
-    return `${(meters / 1000).toFixed(2)} km`;
-  }
-  return `${Math.floor(meters)} m`;
+  return `${(meters / 1000).toFixed(2)} km`;
 }
 //serve a calcolare i giri motore tenendo conto della velocità, della velocita max delle marce e dei giri motore massimi e minimi
 //se il player è fermo dà i giri motore minimi
@@ -125,29 +131,30 @@ function engineRpm() {
     ? IDLE_RPM
     : Math.min(MAX_RPM, IDLE_RPM + (speed / GEAR_MAX_SPEEDS[currentGear - 1]) * (MAX_RPM - IDLE_RPM));
 }
-//serve ad aggiornare in tempo reale l'intero HUD:distanza percorsa, record personale, velocità corrente, giri motore, temperature olio e 
-//refrigerante, orologio, marcia ingaggiata, vite rimaste 
+//Aggiorna le lancette e la marcia mostrata dal nuovo cruscotto.
 function updateHud() {
   const rpm = engineRpm();
-  scoreEl.textContent = formatDistance(distance);
-  bestScoreEl.textContent = formatDistance(bestDistance);
-  speedEl.textContent = String(Math.round(speed));
-  rpmEl.textContent = (rpm / 1000).toFixed(1);
-  speedGaugeEl.setAttribute('aria-label', `Speed: ${Math.round(speed)} kilometers per hour`);
-  rpmGaugeEl.setAttribute('aria-label', `Engine speed: ${Math.round(rpm)} revolutions per minute`);
-  speedGaugeEl.style.setProperty('--needle-angle', `${-135 + (speed / SPEED_GAUGE_MAX) * 270}deg`);
-  rpmGaugeEl.style.setProperty('--needle-angle', `${-135 + ((rpm - IDLE_RPM) / (MAX_RPM - IDLE_RPM)) * 270}deg`);
-  oilTemperatureEl.textContent = String(Math.round(oilTemperature));
-  coolantTemperatureEl.textContent = String(Math.round(coolantTemperature));
-  clockEl.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-  document.getElementById('outside-temperature').textContent = `${OUTSIDE_TEMPERATURE}°C`;
+  const speedRatio = Math.max(0, Math.min(1, speed / SPEED_GAUGE_MAX));
+  const rpmRatio = Math.max(0, Math.min(1, (rpm - IDLE_RPM) / (MAX_RPM - IDLE_RPM)));
+  lancettakmh.style.transform = `rotate(${-150 + speedRatio * 300}deg)`;
+  lancettarpm.style.transform = `rotate(${-150 + rpmRatio * 300}deg)`;
+  lancettakmh.parentElement.setAttribute('role', 'img');
+  lancettakmh.parentElement.setAttribute('aria-label', `Velocita: ${Math.round(speed)} km/h`);
+  lancettarpm.parentElement.setAttribute('role', 'img');
+  lancettarpm.parentElement.setAttribute('aria-label', `Regime motore: ${Math.round(rpm)} giri/min`);
+  marciainnestata.textContent = String(currentGear);
+  marciainnestata.setAttribute('aria-label', `Marcia ${currentGear}`);
+  oilTemperatureEl.textContent = `${Math.round(oilTemperature)}°C`;
+  coolantTemperatureEl.textContent = `${Math.round(coolantTemperature)}°C`;
+  distanceEl.textContent = formatDistance(distance);
+  bestDistanceEl.textContent = formatDistance(bestDistance);
+  livesEl.setAttribute('aria-label', `Integrità: ${lives} su ${STARTING_LIVES}`);
+  lifeHearts.forEach((heart, index) => heart.classList.toggle('persa', index >= lives));
   gearButtons.forEach((button) => {
     const selected = Number(button.dataset.gear) === currentGear;
     button.classList.toggle('is-selected', selected);
     button.setAttribute('aria-pressed', String(selected));
   });
-  livesEl.setAttribute('aria-label', `${lives} ${lives === 1 ? 'life' : 'lives'}`);
-  lifeHearts.forEach((heart, index) => heart.classList.toggle('is-lost', index >= lives));
 }
 //serve innanzitutto a controlare che la marcia impostata esista, poi la imposta come marcia corrente e la aggiorna sull'HUD
 function selectGear(gear) {
@@ -156,12 +163,6 @@ function selectGear(gear) {
   }
   currentGear = gear;
   updateHud();
-}
-//serve a mostrare-nascondere l'overlay di testo e titolo (quello all'inizio e fine partita)
-function setOverlay(title, text, visible) {
-  overlayTitle.textContent = title;
-  overlayText.textContent = text;
-  overlay.classList.toggle('visible', visible);
 }
 //serve a resettare tutta l'interfaccia del HUD e impostare i valori iniziali
 function resetGame() {
@@ -179,17 +180,18 @@ function resetGame() {
   traffic = [];
   nextTrafficModel = 0;
   player.x = laneCenter(2, PLAYER_Y);
-  player.y = PLAYER_Y;
+  player.y = HEIGHT - PLAYER_HEIGHT / 2;
   player.steer = 0;
   updateHud();
 }
-//serve a far iniziare il gioco, resettando il gioco, togliendo la schermata iniziale, accendendo il ghost e ad aggiornare lo stato di gioco
+//serve a far iniziare il gioco, resettando il gioco, togliendo la schermata iniale, accezindendo il ghost e ad aggiornare lo stato di gioco
 function startGame() {
   resetGame();
   startInvulnerable = true;
-  gameState = 'playing';
-  setOverlay('', '', false);
-  startBtn.disabled = false;
+  gameState = 'playing';         
+  soundtrack.play().catch(error => {
+    console.log("Restrizioni audio del browser:", error);   //playlist errore
+  });
 }
 //serve a far terminare la partita, salvando il record della distanza percorsa, mostrando di nuovo la schermata di ending e aggiornando
 //lo stato di gioco
@@ -200,12 +202,11 @@ function endGame() {
     localStorage.setItem('redline-run-best', String(bestDistance));
   }
   updateHud();
-  setOverlay('Run over', `You drove ${formatDistance(distance)}. Press W or ↑ to run again.`, true);
 }
 //serve ad assegnare la velocità ad ogni veicolo del traffico in base al tipo di veicolo (casuale con un massimo valore) e una direzione
 //(circolazione a destra o a sinistra) 
 function trafficSpeedFor(modelId, direction) {
-  if (modelId === 'car-carrier') {
+  if (modelId === 'camion') {
     return 65 + Math.random() * 25;
   }
   if (modelId === 'ninja-bike') {
@@ -421,7 +422,9 @@ function updateTraffic(dt) {
   trafficClock -= dt;
   if (trafficClock <= 0) {
     spawnTraffic();
-    trafficClock = 1.4 + Math.random() * 0.8;
+    trafficClock = 1.8 + Math.random() * 0.8;
+    soundtrack.pause()                   //soundtrack pausa
+    soundtrack.currentTime = 0;          //soundtrack dall'inizio
   }
 
   updateTrafficLanes();
@@ -966,8 +969,8 @@ function shadeColor(hex, amount) {
 //serve a creare e restituire il canvas della pixel art di un veicolo 
 function createTrafficSprite(modelId) {
   const sprite = document.createElement('canvas');
-  sprite.width = modelId === 'car-carrier' ? 48 : 32;
-  sprite.height = modelId === 'car-carrier' ? 88 : 52;
+  sprite.width = modelId === 'camion' ? 48 : 32;
+  sprite.height = modelId === 'camion' ? 88 : 52;
   const pixel = sprite.getContext('2d');
   pixel.imageSmoothingEnabled = false;
 
@@ -976,7 +979,7 @@ function createTrafficSprite(modelId) {
     pixel.fillRect(x, y, width, height);
   }
 
-  if (modelId === 'car-carrier') {
+  if (modelId === 'camion') {
     block(3, 26, '#111619', 42, 60);
     block(5, 28, '#697174', 38, 56);
     block(7, 30, '#a9ada8', 34, 51);
@@ -1181,6 +1184,10 @@ function drawTraffic() {
     const x = laneCenter(car.lanePosition ?? car.lane, car.y);
     const width = car.renderWidth;
     const height = car.renderHeight;
+    const sprite = trafficSprites.get(car.id);
+    if (!sprite.complete || sprite.naturalWidth === 0) {
+      continue;
+    }
     ctx.save();
     ctx.translate(x, car.y);
     if (car.direction === 'oncoming') {
@@ -1190,7 +1197,7 @@ function drawTraffic() {
     ctx.shadowColor = 'rgba(4, 7, 8, 0.72)';
     ctx.shadowBlur = 5;
     ctx.shadowOffsetY = 4;
-    ctx.drawImage(trafficSprites.get(car.id), -width / 2, -height / 2, width, height);
+    ctx.drawImage(sprite, -width / 2, -height / 2, width, height);
     ctx.restore();
   }
 }
@@ -1275,6 +1282,9 @@ window.addEventListener('blur', () => {
 
 for (const [id, direction] of [['steer-left', 'left'], ['steer-right', 'right']]) {
   const button = document.getElementById(id);
+  if (!button) {
+    continue;
+  }
   button.addEventListener('pointerdown', (event) => {     //serve ad attivare la sterzata da un comando touch e 'cattura' il puntatore
     event.preventDefault();
     button.setPointerCapture(event.pointerId);
@@ -1284,14 +1294,14 @@ for (const [id, direction] of [['steer-left', 'left'], ['steer-right', 'right']]
   button.addEventListener('pointercancel', () => setSteering(direction, false));
   button.addEventListener('lostpointercapture', () => setSteering(direction, false));
 }
-//avvia la partita richiamando lo stato di inizio partita
-startBtn.addEventListener('click', startGame);
 gearButtons.forEach((button) => {
   button.addEventListener('click', () => selectGear(Number(button.dataset.gear)));
 });
+canvas.addEventListener('click', () => {
+  if (gameState !== 'playing') {
+    startGame();
+  }
+});
 //serve a inizializzare la distanza percorsa, richiama lo stato di inizio gioco, disabilita il bottone start e avvia il ciclo 'frame'
-bestScoreEl.textContent = formatDistance(bestDistance); {
 resetGame();
-startBtn.disabled = true;
 requestAnimationFrame(gameLoop);
-}

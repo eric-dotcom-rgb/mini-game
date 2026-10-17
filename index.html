@@ -1,12 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
   <head>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">     <!--dati utili-->
   </head>
     <body>
       <div class="scheletro gioco">
-        <canvas id="canvas" width="1080" height="500"></canvas>
+        <canvas id="canvas" width="1080" height="500"></canvas>   <!--canvas dimensioni-->
         <div class="quadro strumenti">
+
+          <div class="quadrotemperature">
+          <div class="quadroTemp">                        <!--quadro olio-->
+          <span class="quadroOlio">Olio</span>
+          <strong id="tempOlio">80°C</strong>
+          </div>
+
+          <div class="quadroTemp">
+          <span class="quadroAcqua">Refrigerante</span>       <!--quadro acqua (refrigerante)-->
+          <strong id="tempAcqua">120°C</strong>
+          </div>
+          </div>
+
           <div class="quadro RPM">
           <div class="sfondo RPM">
           <div class="lancetta RPM" id="lancettarpm"></div>
@@ -14,7 +28,7 @@
           <span id="valoreRPM0">0</span>
           <span id="valoreRPM1">5</span>
           <span id="valoreRPM2">10</span>
-          <span id="valoreRPM3">15</span>
+          <span id="valoreRPM3">15</span>                        <!--quadro RPM completo-->
           <span id="valoreRPM4">20</span>
           <span id="valoreRPM5">25</span>
           <span id="valoreRPM6">30</span>
@@ -29,28 +43,51 @@
           </div>
           </div>
           </div>
-              <div class="quadro marcia">
-              <span id="marciainnestata">N</span>
-              </div>
-                  <div class="quadro kmh">
-                  <div class="sfondo kmh">
-                  <div class="lancetta kmh" id="lancettakmh"></div>
-                  <div class="numeri kmh">
-                  <span id="valorekmh0">0</span>
-                  <span id="valorekmh1">50</span>
-                  <span id="valorekmh2">100</span>
-                  <span id="valorekmh3">150</span>
-                  <span id="valorekmh4">200</span>
-                  <span id="valorekmh5">250</span>
-                  <span id="valorekmh6">300</span>
-                  <span id="valorekmh7">350</span>
-                  <span id="valorekmh8">400</span>
-                  <span id="valorekmhnull">Kilometers/Hour</span>
-                  </div>
-                  </div>
-                  </div>
-                  </div>
+
+          <div class="quadro marcia">
+          <span id="marciainnestata">N</span>            <!--quadro marce-->
           </div>
+
+          <div class="quadro kmh">
+          <div class="sfondo kmh">
+          <div class="lancetta kmh" id="lancettakmh"></div>
+          <div class="numeri kmh">
+          <span id="valorekmh0">0</span>
+          <span id="valorekmh1">50</span>
+          <span id="valorekmh2">100</span>
+          <span id="valorekmh3">150</span>                <!--quadro kmh-->
+          <span id="valorekmh4">200</span>
+          <span id="valorekmh5">250</span>
+          <span id="valorekmh6">300</span>
+          <span id="valorekmh7">350</span>
+          <span id="valorekmh8">400</span>
+          <span id="valorekmhnull">Kilometers/Hour</span>
+          </div>
+          </div>
+          </div>
+
+          <div class="quadrostatistiche">
+          <div class="quadrostatistica">
+          <span class="quadroVite">Integrità</span>       
+          <div id="vite" class="cuori">
+          <img src="cuore.png" alt="vita">
+          <img src="cuore.png" alt="vita">          <!--quadro cuori-->
+          <img src="cuore.png" alt="vita">
+          </div>
+          </div>
+          <div class="quadrostatistica">
+          <span class="quadroDistanza">Distanza</span>   <!--quadro distanza-->
+          <strong id="distanzaAttuale">0.00 km</strong>
+          </div>
+          <div class="quadrostatistica">
+          <span class="quadroRecord">Miglior Record</span>
+          <strong id="distanzaRecord">0.00 km</strong>         <!--quadro record-->
+          </div>
+
+          </div>
+          </div>
+
         </div>
+      <script src="game.js"></script>
     </body>
 </html>

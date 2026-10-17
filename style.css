@@ -143,31 +143,31 @@ body{
 
 /*rotazione numeri dentro kmh*/
 #valorekmh0{
-  transform: rotate(calc(-150deg + 0 * (300deg / 9)));
+  transform: rotate(calc(-150deg + 0 * (300deg / 8)));
 }
 #valorekmh1{
-  transform: rotate(calc(-150deg + 1 * (300deg / 9)));
+  transform: rotate(calc(-150deg + 1 * (300deg / 8)));
 }
 #valorekmh2{
-  transform: rotate(calc(-150deg + 2 * (300deg / 9)));
+  transform: rotate(calc(-150deg + 2 * (300deg / 8)));
 }
 #valorekmh3{
-  transform: rotate(calc(-150deg + 3 * (300deg / 9)));
+  transform: rotate(calc(-150deg + 3 * (300deg / 8)));
 }
 #valorekmh4{
-  transform: rotate(calc(-150deg + 4 * (300deg / 9)));
+  transform: rotate(calc(-150deg + 4 * (300deg / 8)));
 }
 #valorekmh5{
-  transform: rotate(calc(-150deg + 5 * (300deg / 9)));
+  transform: rotate(calc(-150deg + 5 * (300deg / 8)));
 }
 #valorekmh6{
-  transform: rotate(calc(-150deg + 6 * (300deg / 9)));
+  transform: rotate(calc(-150deg + 6 * (300deg / 8)));
 }
 #valorekmh7{
-  transform: rotate(calc(-150deg + 7 * (300deg / 9)));
+  transform: rotate(calc(-150deg + 7 * (300deg / 8)));
 }
 #valorekmh8{
-  transform: rotate(calc(-150deg + 8 * (300deg / 9)));
+  transform: rotate(calc(-150deg + 8 * (300deg / 8)));
 }
 
 /*la scritta del valore NON deve esser collegata ai numeri che girano quindi l origine si annulla e si rifa l'allineamento*/
@@ -176,4 +176,82 @@ body{
   left: 0; width: 100%; margin-left: 0;      /*per centrare testo*/
   top: 95px;                                 /*per spostare testo*/
   text-align: center; font-size: 0.5rem ;
+}
+
+/*posizionamento dei quadranti delle temperature*/
+.quadrotemperature{
+  display: flex; flex-direction: column;
+  gap: 10px; /* Spazio verticale tra olio e refrigerante */
+}
+
+/*aspetto quadranti delle temperature*/
+.quadroTemp {
+  background-color: cadetblue;
+  border: 3px solid burlywood;
+  border-radius: 8px;
+  padding: 6px 12px;
+  display: flex; flex-direction: column;
+  align-items: center;
+  min-width: 110px;
+}
+
+/*scritte temperature olio e acqua*/
+.quadroOlio, .quadroAcqua {
+  font-size: 0.65rem;
+  color: whitesmoke;
+  text-transform: uppercase;
+}
+
+/*scritte numeri temperature olio e acqua*/
+#tempOlio, #tempAcqua {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: whitesmoke;
+  margin-top: 2px;
+}
+
+/*posizionamento statistiche*/
+.quadrostatistiche {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Incolonna le statistiche verticalmente */
+}
+
+/*aspetto dei quadri delle statistiche*/
+.quadrostatistica {
+  background-color: cadetblue; /* Uniformato */
+  border: 3px solid burlywood;
+  border-radius: 8px;
+  padding: 6px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 130px;
+}
+
+/*aspetto scritte delle statistiche*/
+.quadroVite, .quadroDistanza, .quadroRecord {
+  font-size: 0.65rem;
+  color: whitesmoke;
+  text-transform: uppercase;
+}
+
+/*aspetto dati-immagini-numeri delle statistiche*/
+#distanzaAttuale, #distanzaRecord {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: whitesmoke;
+  margin-top: 2px;
+}
+
+/*aspetto cuori*/
+.cuori img {
+  width: 30px; height: 30px;
+  image-rendering: pixelated;
+}
+
+/*quando si perde una vita, si spegne*/
+.cuori img.persa {
+  opacity: 0.15;
+  filter: grayscale(100%);
 }

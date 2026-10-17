@@ -1,29 +1,35 @@
-# Redline Run
+# Pagani Vs Traffic
 
-Move with your grey Pagani Huayra between blue Bugattis and yellow SVJs between the super chaotic traffic scene, smoke superbikes on the left lane and use the trucks to slow down the traffic! With 'Pagani Vs traffic' game, you can be reckless as much as you want on characteristic Italian motorways.
+Move with your own Pagani Huayra between blue Bugattis and yellow SVJs between the super chaotic traffic scene, beat superbikes on the left lane and use the trucks to slow down the traffic! With 'Pagani Vs traffic' game, you can drive and have fun as much as you want on characteristic Italian motorways, with some of the most lovely NCS songs.
 Buon divertimento, pilota!
 
-## How to play
+# How to play
 
-- Open `https://eric-dotcom-rgb.github.io/mini-game/` in the browser search taskbar
-- Steer left and right with the arrow keys or `A` and `D`
-- Press `W` or `↑` to start a run; the car automatically accelerates from 0 to 60 km/h automatically and stays ghosted against traffic until it reaches 60. Select gears with number keys `1`–`6` (maximum speeds: 70, 110, 170, 240, 310, and 380 km/h); hold `W` or `↑` to accelerate and `S` or `↓` to brake down to a minimum of 20 km/h.
-- The retro dashboard shows 0–400 km/h and RPM gauges, oil and coolant temperatures, local time, an 18°C simulated outside temperature, gear selection, scores, and lives.
-- The car moves closer to the center of the screen while accelerating, then shifts back by about one-third of that distance while braking or coasting.
-- On a touch screen, hold the on-screen arrow buttons to steer.
-- You can drive onto either paved shoulder and cross the median into oncoming traffic.
-- Watch for pixel-art yellow-and-black SVJs, blue Chiron Pur Sports, a red car carrier hauling red and black sports cars (up to 90 km/h), and thin green sport and white cruiser motorcycles. The motorcycles are slower than the sports cars, especially the cruiser, which has a miniature American flag.
-- Traffic keeps to the right lane by default. A faster vehicle slows behind slower traffic or the player, moves left to pass only when that lane is clear, then returns right when safe. Vehicles maintain a safe gap instead of overlapping.
-- Traffic has its own cruising speed instead of matching your acceleration or braking. You have three hearts; each collision costs one, and losing all three ends the run. Your best distance is saved in the browser.
-- Each carriageway has a broad, drivable pixel-art shoulder, about half a lane wide.
-- The roadside scenery changes every 600 m: city, canyon, farmland, then mountains. Watch for pixel-art Italian 130 km/h signs.
+Open `https://eric-dotcom-rgb.github.io/mini-game/` in the browser search taskbar and start driving by pressing the 'W' key on your keyboard! The car got its own gauges for both the revs of the engine and the speed (in km/h). The road is inspired by the classic two-lane double sided 'autostrada' found commonly around Italy and in general all Europe. The biomes change every few thousand meters so it keeps the driver focused on driving. Press 'A' and 'D' keys to turn left or right. To change the gears, you need to press on the number pad. The player car got a total of 6 different gears, all limited to a certain speed. Next to the gauges are the 'lives' that the car got. There are a total of 3: if you make contact with a traffic car, you lose one. Next to the healt bar there are two gauges dedicated to the distance travelled the round you're in and the maximum distance set by you. On the left side of the dash we find the temperatures of the motor oil on top and the coolant on the bottom, all signed by a text in italian - of course!(Pagani is Italian)
 
-## Run locally
+# Credits
 
-Open `index.html` directly, or from the project folder run:
+1st song: Song: 
 
-```bash
-python -m http.server 8000
-```
+Slashtaq & Wanden - Full Speed Ahead [NCS Release]
+Music provided by NoCopyrightSounds
+Free Download/Stream: http://NCS.io/FullSpeedAhead
+Watch: http://youtu.be/USBIGzkFI-Q
 
-Then open http://localhost:8000 in your browser.
+2nd song:
+
+Song: Fareoh - Under Water [NCS Release]
+Music provided by NoCopyrightSounds
+Free Download/Stream: http://ncs.io/UnderWater
+Watch: http://youtu.be/xzyRoshFFaA
+
+3rd song:
+
+Song: Cepaque - Alone Tonight
+Music provided by NoCopyrightSounds
+Free Download/Stream: http://ncs.io/alonetonight
+Watch: http://ncs.lnk.to/alonetonightAT/youtube
+
+# General Info
+
+For the car designs and hearts I used 'piskelapp.com'. It took me about 3 1/2 hour-ish to design all of them. The soundtracks used are all credited on '# credits'. It's my first ever project for the Hack Club community and my first time ever coding a full game. Before I used to do some really simple websites in middle school and some scratch, but nothing like this. I firstly used Ai, not knowing how to move around. Then I learned how to do the .html and .css specifically for this game project, so I rewrote everything out of these two files. Then I studied also what the Ai has done on the game.js file, and I added a description to everything in that file so I could sort of tell what was doing what. Then I also added descriptions to the other 2 files, so they were all very clear. I hope I've done a good job! Next project is going to be on godot/unity.
