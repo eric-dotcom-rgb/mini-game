@@ -6,11 +6,11 @@ let   soundtrack = new Audio(playlist[currentTrackIndex]);
       soundtrack.volume = 0.4;
       soundtrack.addEventListener('ended', () =>{    //skip automatico
         currentTrackIndex++;
-        if (currentTrackIndex >= playlist.lenght) {      //quando finisce, ricomincia
+        if (currentTrackIndex >= playlist.length) {      //quando finisce, ricomincia
           currentTrackIndex = 0;
         }
       soundtrack.src = playlist[currentTrackIndex];
-      soundtrack.play().catch(e => consolelog("Errore cambio traccia:", e));  //playlist errore soundtrack(carica nuovo brano)
+      soundtrack.play().catch(error => console.error("Errore cambio traccia:", error));  //playlist errore soundtrack(carica nuovo brano)
       });
 const lancettarpm = document.getElementById('lancettarpm');
 const lancettakmh = document.getElementById('lancettakmh');
@@ -50,14 +50,14 @@ const BRAKE_DECELERATION = 80;
 const ROAD_SCROLL_PER_KMH = 2.3;
 const PLAYER_POSITION_EASING = 6;
 const TRAFFIC_LANE_CHANGE_LOOKAHEAD = 2;
-const PLAYER_WIDTH = 80* 0.8;
-const PLAYER_HEIGHT = 120* 0.8;
+const PLAYER_WIDTH = 80;
+const PLAYER_HEIGHT = 120;
 const STARTING_LIVES = 3;
 const COLLISION_COOLDOWN = 1.15;
 
 const TRAFFIC_MODELS = [                                                         //auto del traffico in lista con le loro caratteristiche
   { id: 'svj', name: 'SVJ', sprite: 'lamborghini.png', renderWidth: 80, renderHeight: 120 },
-  { id: 'chiron', name: 'Chiron Pur Sport', sprite: 'bugatti.png', renderWidth: 80, renderHeight: 120 },
+  { id: 'chiron', name: 'Chiron Pur Sport', sprite: 'bugatti.png', renderWidth: PLAYER_WIDTH, renderHeight: PLAYER_HEIGHT },
   { id: 'camion', name: 'Car carrier', color: '#b82727', sprite: 'camion.png', renderWidth: 80, renderHeight: 170 },
   { id: 'ninja-bike', name: 'Green H2R', color: '#58bd32', sprite: 'ninjah2.png', renderWidth: 50, renderHeight: 100 },
   { id: 'harley-bike', name: 'Harley-Davidson cruiser', color: '#e6e4dc', sprite: 'harley.png', renderWidth: 50, renderHeight: 100 },
@@ -423,8 +423,6 @@ function updateTraffic(dt) {
   if (trafficClock <= 0) {
     spawnTraffic();
     trafficClock = 1.8 + Math.random() * 0.8;
-    soundtrack.pause()                   //soundtrack pausa
-    soundtrack.currentTime = 0;          //soundtrack dall'inizio
   }
 
   updateTrafficLanes();
