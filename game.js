@@ -10,15 +10,11 @@ let   soundtrack = new Audio(playlist[currentTrackIndex]);
           currentTrackIndex = 0;
         }
       soundtrack.src = playlist[currentTrackIndex];
-      startSoundtrack();
+      soundtrack.play().catch(error => console.error("Errore cambio traccia:", error));  //playlist errore soundtrack(carica nuovo brano)
       });
 const lancettarpm = document.getElementById('lancettarpm');
 const lancettakmh = document.getElementById('lancettakmh');
 const marciainnestata = document.getElementById('marciainnestata');
-const startPrompt = document.getElementById('promptAvvio');
-const promptTitle = document.getElementById('titoloPrompt');
-const promptText = document.getElementById('testoPrompt');
-const soundtrackButton = document.getElementById('controlloMusica');
 const gearButtons = document.querySelectorAll('[data-gear]');
 const oilTemperatureEl = document.getElementById('tempOlio');
 const coolantTemperatureEl = document.getElementById('tempAcqua');
@@ -160,33 +156,6 @@ function updateHud() {
     button.setAttribute('aria-pressed', String(selected));
   });
 }
-function updateSoundtrackButton(label) {
-  const isPlaying = !soundtrack.paused;
-  const buttonLabel = isPlaying ? 'Metti in pausa la musica' : label || 'Attiva musica';
-  soundtrackButton.textContent = buttonLabel;
-  soundtrackButton.setAttribute('aria-label', buttonLabel);
-  soundtrackButton.setAttribute('aria-pressed', String(isPlaying));
-}
-function startSoundtrack() {
-  if (!soundtrack.paused) {
-    return;
-  }
-
-  soundtrack.play().catch((error) => {
-    console.error('Impossibile avviare la musica:', error);
-    updateSoundtrackButton('Riprova musica');
-  });
-}
-function updateStartPrompt() {
-  const isPlaying = gameState === 'playing';
-  startPrompt.hidden = isPlaying;
-  if (!isPlaying) {
-    promptTitle.textContent = gameState === 'ended' ? 'Partita terminata' : 'Pagani Vs Traffic';
-    promptText.textContent = gameState === 'ended'
-      ? 'Premi W o fai clic sulla strada per ricominciare.'
-      : 'Premi W o fai clic sulla strada per iniziare.';
-  }
-}
 //serve innanzitutto a controlare che la marcia impostata esista, poi la imposta come marcia corrente e la aggiorna sull'HUD
 function selectGear(gear) {
   if (gear < 1 || gear > GEAR_MAX_SPEEDS.length) {
@@ -220,14 +189,14 @@ function startGame() {
   resetGame();
   startInvulnerable = true;
   gameState = 'playing';         
-  updateStartPrompt();
-  startSoundtrack();
+  soundtrack.play().catch(error => {
+    console.log("Restrizioni audio del browser:", error);   //playlist errore
+  });
 }
 //serve a far terminare la partita, salvando il record della distanza percorsa, mostrando di nuovo la schermata di ending e aggiornando
 //lo stato di gioco
 function endGame() {
   gameState = 'ended';
-  updateStartPrompt();
   if (distance > bestDistance) {
     bestDistance = Math.floor(distance);
     localStorage.setItem('redline-run-best', String(bestDistance));
@@ -248,7 +217,7 @@ function trafficSpeedFor(modelId, direction) {
   }
   return direction === 'same'
     ? 70 + Math.random() * 55
-    : 90 + Math.random() * 30;
+    : 210 + Math.random() * 85;
 }
 //serve a spawnare i veicoli del traffico e ad assegnarli velocità, direzione e corsia, evitando di spawnare veicoli ammassati uno sopra
 //l'altro
@@ -1331,17 +1300,6 @@ canvas.addEventListener('click', () => {
     startGame();
   }
 });
-soundtrackButton.addEventListener('click', () => {
-  if (soundtrack.paused) {
-    startSoundtrack();
-  } else {
-    soundtrack.pause();
-  }
-});
-soundtrack.addEventListener('play', () => updateSoundtrackButton());
-soundtrack.addEventListener('pause', () => updateSoundtrackButton());
-updateSoundtrackButton();
 //serve a inizializzare la distanza percorsa, richiama lo stato di inizio gioco, disabilita il bottone start e avvia il ciclo 'frame'
 resetGame();
-updateStartPrompt();
 requestAnimationFrame(gameLoop);
