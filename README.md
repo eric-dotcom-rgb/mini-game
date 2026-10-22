@@ -3,9 +3,29 @@
 Move with your own Pagani Huayra between blue Bugattis and yellow SVJs between the super chaotic traffic scene, beat superbikes on the left lane and use the trucks to slow down the traffic! With 'Pagani Vs traffic' game, you can drive and have fun as much as you want on characteristic Italian motorways, with some of the most lovely NCS songs.
 Buon divertimento, pilota!
 
-# How to play
+# How to run and play it
 
-Open `https://eric-dotcom-rgb.github.io/mini-game/` in the browser. The start screen explains how to begin: press 'W' or click the road. Use the visible music button to start or pause the soundtrack. The car has gauges for engine revs and speed (in km/h). The road is inspired by the classic two-lane double-sided 'autostrada' found commonly around Italy and Europe. The biomes change every few thousand meters to keep the driver focused. Press 'A' and 'D' to turn left or right. To change gears, press a number from 1 to 6. The player car has 6 gears, each limited to a certain speed. The dashboard also shows 3 lives: hitting a traffic car costs one. The distance gauges show the current run and personal record. On the left of the dashboard are the oil and coolant temperatures, labelled in Italian - of course (Pagani is Italian)!
+Open `https://eric-dotcom-rgb.github.io/mini-game/` in the browser.
+
+Press 'W' to begin driving. The car starts self accelerating until 60 kmh, then youre on the controls! The car has gauges for engine RPMs and current speed (in km/h). The road is inspired by the classic two-lane double-sided 'autostrada' found commonly around Italy and Europe. The biomes change every few thousand meters to keep the driver focused. Press 'A' and 'D' to turn left or right. To change gears, press a number from 1 to 6. The player car has 6 gears, each limited to a certain speed. The dashboard also shows 3 lives: hitting a traffic car costs one. The distance gauges show the current run and personal record. On the left of the dashboard are the oil and coolant temperatures, labelled in Italian - of course (Pagani is Italian)!
+You can also drive listening to 3 of the most beautiful NCS songs, or simply mute it by pressing the button no the top right.
+
+# Controls
+
+The main kayboard keys to use are:
+W-accelerate
+S-brake
+A-move left
+D-move right
+If you let go the W key, the car decelerates itself, like in real life.
+You can change the gears from 1 to 6 simply by pressing the number on you number pad!
+1-first gear(max 70 kmh)
+2-second gear(max 110 kmh)
+3-third gear(max 170 kmh)
+4-fourth gear(max 240 kmh)
+5-fifth gear(max 310 kmh)
+6-sixth gear(max 400 kmh)
+Button on top right of the screen: stops music/resumes song
 
 # Credits
 
@@ -29,6 +49,21 @@ Song: Cepaque - Alone Tonight
 Music provided by NoCopyrightSounds
 Free Download/Stream: http://ncs.io/alonetonight
 Watch: http://ncs.lnk.to/alonetonightAT/youtube
+
+# Tech Stack
+
+I only made the front-end. No back-end involved, only a progress saving function that is saved in the browser itself.
+The project is written in .html, in .css and in Javascript. There are also files using the .png and .mp3 extensions.
+
+# Run locally
+
+Open `index.html` directly, or from the project folder run:
+
+```bash
+python -m http.server 8000
+```
+
+Then open http://localhost:8000 in your browser.
 
 # General Info
 
